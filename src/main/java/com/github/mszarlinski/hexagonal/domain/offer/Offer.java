@@ -1,4 +1,4 @@
-package com.github.mszarlinski.hexagonal.offer;
+package com.github.mszarlinski.hexagonal.domain.offer;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

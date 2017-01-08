@@ -1,1 +1,3 @@
+administrator.email: admin@admin.pl
+
 spring.jpa.show-sql: true

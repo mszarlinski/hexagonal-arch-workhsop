@@ -1,8 +1,10 @@
 package com.github.mszarlinski.hexagonal
 
-import com.github.mszarlinski.hexagonal.offer.Offer
-import com.github.mszarlinski.hexagonal.offer.OfferRepository
+import com.github.mszarlinski.hexagonal.domain.mail.MailServiceClient
+import com.github.mszarlinski.hexagonal.domain.offer.Offer
+import com.github.mszarlinski.hexagonal.domain.offer.OfferRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -17,12 +19,18 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 class OfferCancellationSpec extends Specification {
 
     @Autowired
-    WebApplicationContext wac
+    private WebApplicationContext wac
 
     @Autowired
-    OfferRepository offerRepository
+    private OfferRepository offerRepository
 
-    MockMvc mockMvc
+    @Autowired
+    private MailServiceClient mailServiceClient
+
+    @Value('${administrator.email}')
+    private String administratorEmail
+
+    private MockMvc mockMvc
 
     def setup() {
         mockMvc = webAppContextSetup(wac).build()
@@ -37,8 +45,8 @@ class OfferCancellationSpec extends Specification {
         when:
             mockMvc.perform(delete("/offers/{id}", offer.id))
         then:
-            Offer deletedOffer = offerRepository.findById(offer.id).get()
-            deletedOffer.cancelled
+            Offer cancelledOffer = offerRepository.findById(offer.id).get()
+            cancelledOffer.cancelled
     }
 
     private Offer saveOffer() {
@@ -49,7 +57,12 @@ class OfferCancellationSpec extends Specification {
      * Send request to external Mail Service.
      */
     def "Should notify administrator about offer cancellation"() {
-
+        given:
+            Offer offer = saveOffer()
+        when:
+            mockMvc.perform(delete("/offers/{id}", offer.id))
+        then:
+            1 * mailServiceClient.sendMail("Offer ${offer.id} has been removed", administratorEmail)
     }
 
     /**
