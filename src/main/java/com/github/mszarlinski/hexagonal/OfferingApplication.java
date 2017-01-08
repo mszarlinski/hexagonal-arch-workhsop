@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class HexagonalArchWorkshopApplication {
+public class OfferingApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HexagonalArchWorkshopApplication.class, args);
+		SpringApplication.run(OfferingApplication.class, args);
 	}
 }
